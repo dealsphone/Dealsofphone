@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Deals of Phone</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --brand: #1066CA;
+    --accent: #FFD31D;
+    --background: #f6f7fb;
+    --card-bg: #fff;
+    --radius: 1rem;
+    --shadow: rgba(16,102,202,0.2);
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  header {
+    padding: 1.2rem;
+    background-color: var(--brand);
+    color: white;
+    text-align: center;
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: 0.025em;
+    user-select: none;
+    box-shadow: 0 3px 15px var(--shadow);
+  }
+  #banner {
+    margin: 1rem auto;
+    max-width: 600px;
+    background-color: var(--accent);
+    color: #0b2e5f;
+    padding: 12px 1.5rem;
+    border-radius: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    user-select: none;
+    box-shadow: 0 2px 13px var(--shadow);
+  }
+  .filters {
+    max-width: 700px;
+    margin: 1rem auto 0;
+    background: #e8ecf9;
+    border-radius: var(--radius);
+    padding: 12px 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    box-shadow: 0 1px 7px var(--shadow);
+  }
+  .filters input[type=text],
+  .filters select,
+  .filters label {
+    font-size: 1rem;
+  }
+  .filters input[type=text],
+  .filters select {
+    border-radius: 0.7rem;
+    border: none;
+    padding: 8px 1rem;
+    min-width: 120px;
+    box-shadow: 0 1px 3px #0000001a;
+    transition: box-shadow 0.25s ease;
+  }
+  .filters input[type=text]:focus,
+  .filters select:focus {
+    outline: none;
+    box-shadow: 0 3px 6px #1066ca77;
+  }
+  #product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+    gap: 20px;
+    max-width: 900px;
+    margin: 2rem auto 3rem auto;
+    padding: 0 1rem;
+  }
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 10px 0 var(--shadow);
+    transition: box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    box-shadow: 0 8px 16px 0 var(--shadow);
+  }
+  .card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+  }
+  .card-content {
+    padding: 1rem 1.2rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-name {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0 0 4px 0;
+    color: var(--brand);
+  }
+  .meta-info {
+    font-size: 0.9rem;
+    color: #4c566a;
+    margin-bottom: 6px;
+  }
+  .price {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #104977;
+    margin-top: auto;
+    margin-bottom: 0.7rem;
+  }
+  .actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    cursor: pointer;
+    border: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    background: var(--brand);
+    box-shadow: 0 2px 6px rgba(16,102,202,0.45);
+    transition: background-color 0.2s;
+    flex-grow: 1;
+    text-align: center;
+  }
+  .btn:hover {
+    background: #0A4AAD;
+  }
+  .btn.fav {
+    background: white;
+    color: #e92f2f;
+    border: 2px solid var(--accent);
+    padding: 0.48rem 0.8rem;
+    flex-grow: unset;
+  }
+  .btn.fav.active {
+    background: var(--accent);
+    color: var(--brand);
+    border-color: var(--brand);
+  }
+  .btn.fav:hover {
+    background: var(--accent);
+    border-color: #d1b50f;
+  }
+  /* Popup styles */
+  #popup-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(12,34,67,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2223;
+    padding: 15px;
+  }
+  #popup {
+    background: white;
+    border-radius: var(--radius);
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.6rem 1.6rem 2rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  #popup .close-btn {
+    position: absolute;
+    right: 15px;
+    top: 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--brand);
+    font-weight: 700;
+    user-select: none;
+  }
+  #popup .gallery {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-bottom: 1rem;
+  }
+  #popup .gallery img {
+    height: 80px;
+    aspect-ratio: 1/1;
+    border-radius: 0.8rem;
+    object-fit: cover;
+  }
+  #popup h3 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--brand);
+  }
+  #popup .specs {
+    font-size: 0.95rem;
+    color: #3a4b6a;
+    margin-bottom: 1.2rem;
+    line-height: 1.3;
+  }
+  #popup .popup-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+  #popup .popup-actions button {
+    flex-grow: 1;
+  }
+  .admin-bar {
+    max-width: 700px;
+    margin: 0 auto 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+  }
+  .hidden {
+    display: none;
+  }
+  footer {
+    text-align: center;
+    padding: 1.5rem 0 3rem 0;
+    color: #6a7a99;
+    user-select: none;
+  }
+  footer button {
+    background: var(--brand);
+    border-radius: 1.2rem;
+    border: none;
+    padding: 0.55rem 1.3rem;
+    font-weight: 600;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(16,102,202,0.5);
+    transition: background-color 0.25s ease;
+  }
+  footer button:hover {
+    background-color: #0a3f8a;
+  }
+  @media (max-width: 480px) {
+    #popup {
+      max-width: 90vw;
+      padding: 1rem 1rem 1.5rem 1rem;
+    }
+    .card img {
+      height: 130px;
+    }
+    .filters {
+      gap: 8px;
+    }
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+<header>
+  Deals of Phone
+  <div id="banner">⚡️ Special: Extra warranty on select devices!</div>
+</header>
+<section class="filters" aria-label="Search and filters">
+  <input type="text" id="search" placeholder="Search Phones..." autocomplete="off" />
+  <select id="filterBrand" aria-label="Filter by Brand">
+    <option value="">Brand</option>
+    <option>Samsung</option>
+    <option>Apple</option>
+    <option>Xiaomi</option>
+  </select>
+  <select id="filterRam" aria-label="Filter by RAM">
+    <option value="">RAM</option>
+    <option>4GB</option>
+    <option>6GB</option>
+    <option>8GB</option>
+  </select>
+  <select id="filterStorage" aria-label="Filter by Storage">
+    <option value="">Storage</option>
+    <option>64GB</option>
+    <option>128GB</option>
+  </select>
+  <select id="filterNetwork" aria-label="Filter by Network">
+    <option value="">4G/5G</option>
+    <option>4G</option>
+    <option>5G</option>
+  </select>
+  <label for="filterPrice" id="priceLabel">Max Price: ₹100000</label>
+  <input type="range" id="filterPrice" min="5000" max="100000" value="100000" step="1000" />
+</section>
+<main id="product-list" aria-live="polite" aria-label="Product listings"></main>
+
+<div class="admin-bar hidden" id="adminBar" role="region" aria-label="Admin actions">
+  <button id="btnShowAdminPanel">Open Admin Panel</button>
+  <button id="btnExport">Export Products</button>
+  <button id="btnImport">Import Products</button>
+  <button id="btnLogout">Logout Admin</button>
+</div>
+
+<div id="popup-bg" aria-hidden="true">
+  <div id="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+    <button class="close-btn" aria-label="Close popup">&times;</button>
+    <div id="popup-content"></div>
+  </div>
+</div>
+
+<footer>
+  <button id="btnAdminLogin">Admin Login</button>
+  <span id="pwaStatus" aria-live="polite"></span>
+</footer>
+
+<script>
+(() => {
+  // Constants
+  const adminUser = "dealadmin";
+  const adminPass = "phone@2025";
+  const whatsappNumber = "917019535988";
+
+  // Elements
+  const productListEl = document.getElementById("product-list");
+  const searchEl = document.getElementById("search");
+  const filterBrandEl = document.getElementById("filterBrand");
+  const filterRamEl = document.getElementById("filterRam");
+  const filterStorageEl = document.getElementById("filterStorage");
+  const filterNetworkEl = document.getElementById("filterNetwork");
+  const filterPriceEl = document.getElementById("filterPrice");
+  const priceLabelEl = document.getElementById("priceLabel");
+  const popupBg = document.getElementById("popup-bg");
+  const popup = document.getElementById("popup");
+  const popupContent = document.getElementById("popup-content");
+  const popupCloseBtn = popup.querySelector(".close-btn");
+  const adminBar = document.getElementById("adminBar");
+  const btnShowAdminPanel = document.getElementById("btnShowAdminPanel");
+  const btnExport = document.getElementById("btnExport");
+  const btnImport = document.getElementById("btnImport");
+  const btnLogout = document.getElementById("btnLogout");
+  const btnAdminLogin = document.getElementById("btnAdminLogin");
+  const pwaStatus = document.getElementById("pwaStatus");
+
+  // State
+  let products = [];
+  let favorites = new Set();
+  let isAdmin = false;
+
+  // Utilities for storage
+  const STORAGE_PRODUCTS_KEY = "dealsOfPhoneProducts";
+  const STORAGE_FAVS_KEY = "dealsOfPhoneFavorites";
+
+  function saveProducts() {
+    localStorage.setItem(STORAGE_PRODUCTS_KEY, JSON.stringify(products));
+  }
+  function loadProducts() {
+    const raw = localStorage.getItem(STORAGE_PRODUCTS_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch { return null; }
+  }
+  function saveFavorites() {
+    localStorage.setItem(STORAGE_FAVS_KEY, JSON.stringify([...favorites]));
+  }
+  function loadFavorites() {
+    const raw = localStorage.getItem(STORAGE_FAVS_KEY);
+    if (!raw) return new Set();
+    try {
+      return new Set(JSON.parse(raw));
+    } catch { return new Set(); }
+  }
+
+  // Sample default products if none exist
+  function initializeDefaultProducts() {
+    if (!loadProducts()) {
+      products = [
+        {
+          id: "prd001",
+          name: "Samsung Galaxy S21",
+          brand: "Samsung",
+          ram: "8GB",
+          storage: "128GB",
+          condition: "Like New",
+          price: 22000,
+          images: ["https://i.imgur.com/SamsungS21.jpg"],
+          imei: "356478903465789",
+          network: "5G"
+        },
+        {
+          id: "prd002",
+          name: "Apple iPhone 12",
+          brand: "Apple",
+          ram: "4GB",
+          storage: "64GB",
+          condition: "Excellent",
+          price: 32000,
+          images: ["https://i.imgur.com/iPhone12.jpg"],
+          imei: "352099763747654",
+          network: "5G"
+        },
+        {
+          id: "prd003",
+          name: "Xiaomi Redmi Note 9",
+          brand: "Xiaomi",
+          ram: "6GB",
+          storage: "128GB",
+          condition: "Very Good",
+          price: 15000,
+          images: ["https://i.imgur.com/XiaomiNote9.jpg"],
+          imei: "865309997475003",
+          network: "4G"
+        }
+      ];
+      saveProducts();
+    } else {
+      products = loadProducts();
+    }
+  }
+
+  // Generate product card HTML
+  function createProductCard(product) {
+    const favActive = favorites.has(product.id) ? "active" : "";
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${product.images[0]}" alt="${product.name}" loading="lazy" />
+      <div class="card-content" tabindex="0">
+        <h2 class="product-name">${product.name}</h2>
+        <div class="meta-info">${product.brand} • <em>${product.condition}</em></div>
+        <div class="meta-info">RAM: ${product.ram} | Storage: ${product.storage} | ${product.network}</div>
+        <div class="meta-info" style="opacity:0.8;">IMEI: <code>${product.imei}</code></div>
+        <div class="price">₹${product.price}</div>
+        <div class="actions">
+          <button class="btn details-btn" aria-label="View details of ${product.name}">Details</button>
+          <button class="btn qr-btn" aria-label="Show QR code for ${product.name}">QR</button>
+          <button class="btn order-btn" aria-label="Order ${product.name} on WhatsApp">WhatsApp</button>
+          <button class="btn fav fav-btn ${favActive}" aria-label="${favActive ? 'Remove from' : 'Add to'} favorites">&#10084;</button>
+        </div>
+      </div>
+    `;
+    card.querySelector(".details-btn").addEventListener("click", () => showProductPopup(product.id));
+    card.querySelector(".qr-btn").addEventListener("click", () => showQRCode(product.id));
+    card.querySelector(".order-btn").addEventListener("click", () => orderWhatsApp(product.id));
+    card.querySelector(".fav-btn").addEventListener("click", () => {
+      toggleFavorite(product.id);
+      renderProducts();
+    });
+    return card;
+  }
+
+  // Filter products based on UI inputs
+  function filterProducts() {
+    const searchTerm = searchEl.value.trim().toLowerCase();
+    const brand = filterBrandEl.value;
+    const ram = filterRamEl.value;
+    const storage = filterStorageEl.value;
+    const network = filterNetworkEl.value;
+    const maxPrice = Number(filterPriceEl.value);
+    priceLabelEl.textContent = `Max Price: ₹${maxPrice}`;
+
+    return products.filter(p => {
+      return (
+        (p.name.toLowerCase().includes(searchTerm) || p.brand.toLowerCase().includes(searchTerm)) &&
+        (brand === "" || p.brand === brand) &&
+        (ram === "" || p.ram === ram) &&
+        (storage === "" || p.storage === storage) &&
+        (network === "" || p.network === network) &&
+        (p.price <= maxPrice)
+      );
+    });
+  }
+
+  // Render product list
+  function renderProducts() {
+    productListEl.innerHTML = "";
+    const filtered = filterProducts();
+    if (filtered.length === 0) {
+      productListEl.innerHTML = "<p style='text-align:center; color:#666;'>No products found.</p>";
+      return;
+    }
+    for (const prod of filtered) {
+      productListEl.appendChild(createProductCard(prod));
+    }
+  }
+
+  // Show product details popup
+  function showProductPopup(id) {
+    const prod = products.find(p => p.id === id);
+    if (!prod) return;
+
+    popupContent.innerHTML = `
+      <div class="gallery" aria-label="Product image gallery">
+        ${prod.images.map(img => `<img src="${img}" alt="${prod.name}" loading="lazy" />`).join("")}
+      </div>
+      <h3 id="popupTitle">${prod.name}</h3>
+      <p class="specs">
+        <strong>Brand:</strong> ${prod.brand}<br />
+        <strong>Condition:</strong> ${prod.condition}<br />
+        <strong>IMEI:</strong> <code>${prod.imei}</code><br />
+        <strong>Price:</strong> ₹${prod.price}<br />
+        <strong>RAM / Storage:</strong> ${prod.ram} / ${prod.storage}<br />
+        <strong>Network:</strong> ${prod.network}
+      </p>
+      <div class="popup-actions">
+        <button class="btn" id="popupOrder">Order on WhatsApp</button>
+        <button class="btn" id="popupQR">Show QR Code</button>
+        <button class="btn fav-btn ${favorites.has(prod.id) ? "active" : ""}" id="popupFav">&#10084;</button>
+      </div>
+    `;
+    popupBg.style.display = "flex";
+
+    document.getElementById("popupOrder").onclick = () => {
+      popupBg.style.display = "none";
+      orderWhatsApp(id);
+    };
+    document.getElementById("popupQR").onclick = () => showQRCode(id);
+    document.getElementById("popupFav").onclick = () => {
+      toggleFavorite(id);
+      document.getElementById("popupFav").classList.toggle("active");
+      renderProducts();
+    };
+  }
+
+  // Close popup
+  popupCloseBtn.onclick = () => {
+    popupBg.style.display = "none";
+  };
+  popupBg.onclick = (e) => {
+    if (e.target === popupBg) {
+      popupBg.style.display = "none";
+    }
+  };
+  
+  // Generate and show QR code for a product
+  function showQRCode(id) {
+    const prod = products.find(p => p.id === id);
+    if (!prod) return;
+    
+    // The QR code stores hash URL with product ID only
+    const qrText = `${window.location.origin}${window.location.pathname}#product=${prod.id}`;
+
+    popupContent.innerHTML = `
+      <div style="margin-bottom: 1rem; text-align:center;">
+        <strong>Scan QR code to open this product page</strong>
+      </div>
+      <div id="qrcode"></div>
+      <div style="margin-top: 1rem; text-align:center;">
+        <button id="copyLinkBtn">Copy Link</button>
+      </div>
+    `;
+    popupBg.style.display = "flex";
+    new QRCode(document.getElementById("qrcode"), {
+      text: qrText,
+      width: 180,
+      height: 180,
+      colorDark: "#1066CA",
+      colorLight: "#fff",
+      correctLevel: QRCode.CorrectLevel.H,
+    });
+
+    document.getElementById("copyLinkBtn").onclick = () => {
+      navigator.clipboard.writeText(qrText).then(() => alert("Link copied to clipboard!"));
+    };
+  }
+
+  // WhatsApp order function with prompt
+  function orderWhatsApp(id) {
+    const prod = products.find(p => p.id === id);
+    if (!prod) return;
+
+    const name = prompt("Your Name:");
+    if (!name) { alert("Please enter your name."); return; }
+    const phone = prompt("Your Phone Number:");
+    if (!phone) { alert("Please enter your phone number."); return; }
+
+    const message = `Order details:\nName: ${name}\nPhone: ${phone}\nProduct: ${prod.name}\nIMEI: ${prod.imei}\nPrice: ₹${prod.price}`;
+
+    const waLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    window.open(waLink, "_blank");
+  }
+
+  // Toggle favorite product
+  function toggleFavorite(id) {
+    if (favorites.has(id)) favorites.delete(id);
+    else favorites.add(id);
+    saveFavorites();
+  }
+
+  // Admin functions
+  function showAdminPanel() {
+    if (!isAdmin) return;
+    adminBar.style.display = "flex";
+
+    // Create and show admin panel dialog
+    const panelContent = `
+      <h2 style="text-align:center;">Admin Panel</h2>
+      <table style="width: 95%; margin: auto; border-collapse: collapse; margin-bottom: 1rem;">
+        <thead style="background:#e7eaf3;">
+          <tr>
+            <th>Name</th><th>Brand</th><th>RAM</th><th>Storage</th><th>Condition</th>
+            <th>Price</th><th>IMEI</th><th>Network</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${products.map(p => `
+            <tr>
+              <td><input type="text" value="${p.name}" data-id="${p.id}" data-field="name" class="admin-input"></td>
+              <td><input type="text" value="${p.brand}" data-id="${p.id}" data-field="brand" class="admin-input"></td>
+              <td><input type="text" value="${p.ram}" data-id="${p.id}" data-field="ram" class="admin-input"></td>
+              <td><input type="text" value="${p.storage}" data-id="${p.id}" data-field="storage" class="admin-input"></td>
+              <td><input type="text" value="${p.condition}" data-id="${p.id}" data-field="condition" class="admin-input"></td>
+              <td><input type="number" value="${p.price}" data-id="${p.id}" data-field="price" class="admin-input"></td>
+              <td><input type="text" value="${p.imei}" data-id="${p.id}" data-field="imei" class="admin-input"></td>
+              <td><input type="text" value="${p.network}" data-id="${p.id}" data-field="network" class="admin-input"></td>
+              <td><button class="delete-btn" data-id="${p.id}">Delete</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <h3>Add New Product</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 1rem;">
+        <input id="newName" placeholder="Name" />
+        <input id="newBrand" placeholder="Brand" />
+        <input id="newRam" placeholder="RAM, e.g. 4GB" />
+        <input id="newStorage" placeholder="Storage, e.g. 64GB" />
+        <input id="newCondition" placeholder="Condition" />
+        <input type="number" id="newPrice" placeholder="Price" />
+        <input id="newIMEI" placeholder="IMEI" />
+        <input id="newNetwork" placeholder="Network (4G/5G)" />
+        <input id="newImages" placeholder="Image URLs (comma separated)" />
+      </div>
+      <button id="addProdBtn" style="padding: 0.5rem 1rem; background: var(--brand); color: white; border:none; border-radius: 1rem; font-weight: 700; cursor: pointer;">Add Product</button>
+      <h3>Banner Text</h3>
+      <input id="bannerInput" placeholder="Banner Text" style="width: 90%; font-size: 1rem; padding: 0.5rem; border-radius: 0.6rem; border:1px solid #ccc;" />
+      <button id="updateBannerBtn" style="margin-top:0.5rem; padding: 0.5rem 1rem; background: var(--accent); border:none; color: #0b2e5f; border-radius: 1rem; font-weight: 700; cursor: pointer;">Update Banner</button>
+    `;
+    popupContent.innerHTML = panelContent;
+    popup.style.width = "90vw";
+    popupBg.style.display = "flex";
+
+    // Attach admin event listeners
+    popupContent.querySelectorAll('.admin-input').forEach(input => {
+      input.addEventListener('change', e => {
+        const id = e.target.dataset.id;
+        const field = e.target.dataset.field;
+        const value = field === 'price' ? Number(e.target.value) : e.target.value;
+        const prod = products.find(p => p.id === id);
+        if (prod) {
+          prod[field] = value;
+          saveProducts();
+          renderProducts();
+        }
+      });
+    });
+    popupContent.querySelectorAll(".delete-btn").forEach(btn => {
+      btn.addEventListener('click', e => {
+        const id = e.target.dataset.id;
+        products = products.filter(p => p.id !== id);
+        saveProducts();
+        renderProducts();
+        showAdminPanel();
+      });
+    });
+    document.getElementById("addProdBtn").onclick = () => {
+      const newProd = {
+        id: "prd" + Date.now(),
+        name: document.getElementById("newName").value.trim(),
+        brand: document.getElementById("newBrand").value.trim(),
+        ram: document.getElementById("newRam").value.trim(),
+        storage: document.getElementById("newStorage").value.trim(),
+        condition: document.getElementById("newCondition").value.trim(),
+        price: Number(document.getElementById("newPrice").value),
+        imei: document.getElementById("newIMEI").value.trim(),
+        network: document.getElementById("newNetwork").value.trim(),
+        images: document.getElementById("newImages").value.split(",").map(s => s.trim()).filter(Boolean)
+      };
+      if (!newProd.name) {
+        alert("Product name is required.");
+        return;
+      }
+      products.push(newProd);
+      saveProducts();
+      renderProducts();
+      showAdminPanel();
+    };
+    document.getElementById("updateBannerBtn").onclick = () => {
+      const bannerText = document.getElementById("bannerInput").value;
+      document.getElementById("banner").textContent = bannerText || "⚡️ Special: Extra warranty on select devices!";
+      popupBg.style.display = "none";
+    };
+  }
+
+  // Admin Login
+  btnAdminLogin.addEventListener("click", () => {
+    if (isAdmin) {
+      if (confirm("Logout admin?")) {
+        isAdmin = false;
+        adminBar.classList.add("hidden");
+        alert("Admin logged out.");
+      }
+      return;
+    }
+    const username = prompt("Enter admin username:");
+    if (username !== adminUser) {
+      alert("Invalid username.");
+      return;
+    }
+    const password = prompt("Enter admin password:");
+    if (password !== adminPass) {
+      alert("Invalid password.");
+      return;
+    }
+    isAdmin = true;
+    showAdminPanel();
+  });
+
+  // Admin bar buttons
+  btnShowAdminPanel.onclick = () => showAdminPanel();
+
+  btnExport.onclick = () => {
+    const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "deals_of_phone_products_" + Date.now() + ".json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  btnImport.onclick = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = evt => {
+        try {
+          const imported = JSON.parse(evt.target.result);
+          if (Array.isArray(imported)) {
+            products = imported;
+            saveProducts();
+            renderProducts();
+            showAdminPanel();
+            alert("Import successful!");
+          } else {
+            alert("Invalid JSON structure.");
+          }
+        } catch {
+          alert("Failed to parse JSON.");
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
+  btnLogout.onclick = () => {
+    if (confirm("Logout admin?")) {
+      isAdmin = false;
+      adminBar.classList.add("hidden");
+      popupBg.style.display = "none";
+    }
+  };
+
+  // Favorites persist on change
+  function toggleFavorite(id) {
+    if (favorites.has(id)) favorites.delete(id);
+    else favorites.add(id);
+    saveFavorites();
+  }
+
+  // On page load initialization
+  function init() {
+    initializeDefaultProducts();
+    favorites = loadFavorites();
+    filterPriceEl.addEventListener("input", () => {
+      priceLabelEl.innerText = `Max Price: ₹${filterPriceEl.value}`;
+      renderProducts();
+    });
+    [searchEl, filterBrandEl, filterRamEl, filterStorageEl, filterNetworkEl].forEach(el => {
+      el.addEventListener("input", renderProducts);
+    });
+    renderProducts();
+
+    // Check for hash #product=ID to open details automatically
+    const hash = window.location.hash;
+    if (hash && hash.startsWith("#product=")) {
+      const pid = hash.split("=")[1];
+      setTimeout(() => showProductPopup(pid), 600);
+    }
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
